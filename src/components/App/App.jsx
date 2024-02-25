@@ -1,52 +1,99 @@
 import './App.css';
 import { useState, useEffect } from 'react';
-import { useCount } from '../../hooks/useCount';
 import { fetchImages } from '../../images-api';
 import ImageGallery from '../ImageGallery/ImageGallery';
 import SearchBar from '../SearchBar/SearchBar';
 import Loader from '../Loader/Loader';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import LoadMoreBtn from '../LoadMoreBtn/LoadMoreBtn';
-
-const per_page = 12;
+import ImageModal from '../ImageModal/ImageModal';
 
 const App = () => {
   const [query, setQuery] = useState('');
   const [images, setImages] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [page, setPage] = useCount(1);
+  const [isEmpty, setIsEmpty] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [page, setPage] = useState(1);
+  const [showModal, setShowModal] = useState(false);
+  const [urlModal, setUrlModal] = useState('');
+  const [altModal, setAltModal] = useState('');
 
   useEffect(() => {
     const getImages = async () => {
       try {
-        setLoading(true);
-        setIsError(false);
-        const data = await fetchImages({ query, page, per_page });
-        setImages(prev => [...prev, ...data]);
+        setIsLoading(true);
+        const { results, total_pages } = await fetchImages({ query, page });
+
+        if (!results.length) {
+          setIsEmpty(true);
+          return;
+        }
+
+        setImages(prev => [...prev, ...results]);
+        setIsVisible(page < total_pages);
       } catch (error) {
         setIsError(true);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
     getImages();
   }, [query, page]);
 
-  const handleSearch = searchQuery => {
+  const handleSearch = value => {
+    if (value === query) return;
     setImages([]);
-    setQuery(searchQuery);
+    setIsError(false);
+    setQuery(value);
+    setPage(1);
+    setIsEmpty(false);
+    setIsVisible(false);
+  };
+
+  const handleLoadMore = () => {
+    setPage(prevPage => prevPage + 1);
+  };
+
+  const openModal = ({ alt, imgUrl }) => {
+    setAltModal(alt);
+    setUrlModal(imgUrl);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setAltModal('');
+    setUrlModal('');
   };
 
   return (
     <div>
       <SearchBar onSubmit={handleSearch} />
-      {!isError && images?.length > 0 && <ImageGallery images={images} />}
+
       {isError && (
         <ErrorMessage>Whoops, something went wrong! Please try reloading this page!</ErrorMessage>
       )}
-      {!isError && !loading && images?.length > 0 && <LoadMoreBtn onClick={setPage} />}
-      {loading && <Loader />}
+
+      {images.length !== 0 && <ImageGallery images={images} openModal={openModal} />}
+
+      {isEmpty && query && <ErrorMessage>Sorry. There are no images ... 😭</ErrorMessage>}
+
+      {isVisible && (
+        <LoadMoreBtn disabled={isLoading} onClick={handleLoadMore}>
+          {isLoading ? 'Loading' : 'Load more'}
+        </LoadMoreBtn>
+      )}
+
+      {isLoading && <Loader />}
+
+      <ImageModal
+        closeModal={closeModal}
+        modalIsOpen={showModal}
+        alt={altModal}
+        imgUrl={urlModal}
+      />
     </div>
   );
 };

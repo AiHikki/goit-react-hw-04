@@ -25,7 +25,15 @@ ul {
 }
 
 button {
+  border: none;
+  font: inherit;
+  color: inherit;
   cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
 }
 
 img {

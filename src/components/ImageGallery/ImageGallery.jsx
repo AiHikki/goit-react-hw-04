@@ -1,12 +1,12 @@
 import ImageCard from '../ImageCard/ImageCard';
 import c from './ImageGallery.module.css';
 
-const ImageGallery = ({ images }) => {
+const ImageGallery = ({ images, openModal }) => {
   return (
-    <ul className={c.gallery}>
-      {images.map((image, i) => (
-        <li key={i} className={c.item}>
-          <ImageCard image={image} />
+    <ul className={c.list}>
+      {images.map(image => (
+        <li key={image.id} className={c.item}>
+          <ImageCard image={image} openModal={openModal} />
         </li>
       ))}
     </ul>
