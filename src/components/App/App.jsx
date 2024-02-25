@@ -16,7 +16,7 @@ const App = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
-  const [modalInfo, setModalInfo] = useState({});
+  const [selectedImageInfo, setSelectedImageInfo] = useState({});
 
   useEffect(() => {
     const getImages = async () => {
@@ -55,13 +55,13 @@ const App = () => {
   };
 
   const openModal = values => {
-    setModalInfo(values);
+    setSelectedImageInfo(values);
     setShowModal(true);
   };
 
   const closeModal = () => {
     setShowModal(false);
-    setModalInfo({});
+    setSelectedImageInfo({});
   };
 
   return (
@@ -84,7 +84,7 @@ const App = () => {
 
       {isLoading && <Loader />}
 
-      <ImageModal closeModal={closeModal} modalIsOpen={showModal} modal={modalInfo} />
+      <ImageModal closeModal={closeModal} modalIsOpen={showModal} modal={selectedImageInfo} />
     </div>
   );
 };
