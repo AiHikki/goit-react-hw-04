@@ -1,4 +1,3 @@
-import './App.css';
 import { useState, useEffect } from 'react';
 import { fetchImages } from '../../images-api';
 import ImageGallery from '../ImageGallery/ImageGallery';
@@ -17,8 +16,7 @@ const App = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
-  const [urlModal, setUrlModal] = useState('');
-  const [altModal, setAltModal] = useState('');
+  const [modalInfo, setModalInfo] = useState({});
 
   useEffect(() => {
     const getImages = async () => {
@@ -56,16 +54,14 @@ const App = () => {
     setPage(prevPage => prevPage + 1);
   };
 
-  const openModal = ({ alt, imgUrl }) => {
-    setAltModal(alt);
-    setUrlModal(imgUrl);
+  const openModal = values => {
+    setModalInfo(values);
     setShowModal(true);
   };
 
   const closeModal = () => {
     setShowModal(false);
-    setAltModal('');
-    setUrlModal('');
+    setModalInfo({});
   };
 
   return (
@@ -88,12 +84,7 @@ const App = () => {
 
       {isLoading && <Loader />}
 
-      <ImageModal
-        closeModal={closeModal}
-        modalIsOpen={showModal}
-        alt={altModal}
-        imgUrl={urlModal}
-      />
+      <ImageModal closeModal={closeModal} modalIsOpen={showModal} modal={modalInfo} />
     </div>
   );
 };

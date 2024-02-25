@@ -1,13 +1,13 @@
 .loadBtn {
   display: block;
   margin: 0 auto;
-  padding: 8px 18px;
+  width: 120px;
+  height: 42px;
   border-radius: 20px;
   box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.1);
-  transition: all 250ms ease;
+  transition: transform var(--td) var(--ttf);
 }
 
 .loadBtn:hover {
   transform: translateY(-10%);
-  box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.3);
 }
